@@ -49,6 +49,7 @@
                 padding: 2px;
             }
         </style>
+        <meta charset="UTF-8" />
     </head>
     <body>
         <div><h3>Higher or Lower</h3></div>
@@ -66,7 +67,6 @@
                 const cmd = document.getElementById("messages");
                 const input = document.getElementById("input");
                 const reset = document.getElementById("reset");
-                const random = Math.floor(Math.random() * 100);
                 let inputMismatchCount = 0;
                 let attempts = 1;
                 function createMessage(message) {
@@ -80,49 +80,72 @@
                     hide(reset);
                     createMessage("Greetings! I'm your friendly guide, Tonio!");
                     createMessage("Here you can play the old but gold Higher or Lower game!");
-                    createMessage("I've picked a number between 0 and 100 inclusive for you. Try to guess it in 10 attempts. <b>Or else.</b>");
-                    createMessage("Or else you just suck, I guess.");
-                    createMessage("Anyways good luck.");
-                    createMessage(`Attempt #${attempts}.`);
+                    createMessage("Pick your level of difficulty (1: between 0 and 100. 2: between 0 and 1000. 3: between 0 and 10 000).");
+                    input.onkeyup = handleLevel;
                 };
 
-                input.onkeyup = function(e) {
+                function handleLevel(e) {
                     if (e.keyCode === 13) {
                         const value = +input.value.trim();
-                        if (!isNaN(value)) {
-                            if (value === 69) {
-                                createMessage(Math.random() < 0.5 ? "Noice. Très noice." : "Nłas. Bardzo nłas.");
-                            }
-                            if (value === random) {
-                                win();
-                            } else {
-                                if (value > random) {
-                                    createMessage("Nope, aim lower.");
-                                } else {
-                                    createMessage("Nope, aim higher.");
-                                }
-                                input.value = "";
-                                attempts++;
-                                if (attempts === 9) createMessage("Last attempt.");
-                                if (attempts !== 10) createMessage(`Attempt #${attempts}.`);
-                                else lose();
-                            }
-                        } else {
-                            switch (inputMismatchCount) {
-                                case 0: createMessage("Bruh.");
-                                break;
-                                case 1: createMessage("B r u h.");
-                                break;
-                                case 2: createMessage("Stop.");
-                                break;
-                                case 3:
-                                createMessage("That's not funny.");
-                                lose();
-                                break;
-                            }
-                            inputMismatchCount++;
+                        if ([1, 2, 3].includes(value)) {
+                            const randomValueCap = {
+                                1: 100,
+                                2: 1000,
+                                3: 10000
+                            }[value];
+                            const randomValue = Math.floor(Math.random() * randomValueCap);
+                            const startGame = handleGuesses(randomValue);
+                            createMessage(`So you picked level ${value}, huh. Good luck and have fun.`);
+                            createMessage(`I chose a number between 0 and ${randomValueCap}. Try winning in 10 attempts. <b>Or else.</b>`);
+                            createMessage("Or else nothing. I guess you just suck then.")
+                            createMessage(`Attempt #1.`);
+                            input.onkeyup = startGame;
                         }
                     }
+                };
+
+                function handleGuesses(randomPick){
+                    return function (e) {
+                        if (e.keyCode === 13) {
+                            const value = +input.value.trim();
+                            if (!isNaN(value)) {
+                                if (value === 69) {
+                                    createMessage(Math.random() < 0.5 ? "Noice. Très noice." : "Nłas. Bardzo nłas.");
+                                }
+                                if (value === randomPick) {
+                                    win();
+                                } else {
+                                    if (value > randomPick) {
+                                        createMessage("Nope, aim lower.");
+                                    } else {
+                                        createMessage("Nope, aim higher.");
+                                    }
+                                    input.value = "";
+                                    attempts++;
+                                    if (attempts === 9) createMessage("Last attempt.");
+                                    if (attempts !== 10) {
+                                        createMessage(`Attempt #${attempts}.`);
+                                        createMessage(`Your last pick was ${value}.`);
+                                    }
+                                    else lose();
+                                }
+                            } else {
+                                switch (inputMismatchCount) {
+                                    case 0: createMessage("Bruh.");
+                                    break;
+                                    case 1: createMessage("B r u h.");
+                                    break;
+                                    case 2: createMessage("Stop.");
+                                    break;
+                                    case 3:
+                                    createMessage("That's not funny.");
+                                    lose();
+                                    break;
+                                }
+                                inputMismatchCount++;
+                            }
+                        }
+                    };
                 };
 
                 function lose() {
