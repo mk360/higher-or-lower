@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Higher or Lower
+        </title>
+        <style>
+            body {
+                background-color: rgb(109, 46, 46);
+                font-family: 'Segoe UI', 'Ubuntu', Tahoma, Geneva, Verdana, sans-serif;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                justify-content: center;
+                align-items: center;
+            }
+            h3 {
+                color: white;
+                font-size: 40px;
+            }
+            .command-line {
+                background-color: black;
+                border-radius: 10px;
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+            }
+            input {
+                border-radius: 4px;
+                margin-top: 4px;
+                margin-bottom: 4px;
+            }
+            .messages {
+                color: white;
+            }
+            #reset {
+                border-radius: 4px;
+                padding: 4px;
+            }
+            #reset:hover {
+                background-color: rgb(109, 46, 46);
+                color: white;
+                cursor: pointer;
+                border-color: rgb(109, 46, 46);
+                padding: 4px;
+            }
+            #message {
+                padding: 2px;
+            }
+        </style>
+    </head>
+    <body>
+        <div><h3>Higher or Lower</h3></div>
+        <div class="container">
+            <div class="command-line" id="command-line">
+                <div class="messages" id="messages"></div>
+                <div class="input">
+                    <input id="input" style="display: block" />
+                    <button id="reset">Reset</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            (function() {
+                const cmd = document.getElementById("messages");
+                const input = document.getElementById("input");
+                const reset = document.getElementById("reset");
+                const random = Math.floor(Math.random() * 100);
+                let inputMismatchCount = 0;
+                let attempts = 1;
+                function createMessage(message) {
+                    const element = document.createElement("div");
+                    element.id = "message";
+                    element.innerHTML = message;
+                    cmd.appendChild(element);
+                };
+                reset.onclick = () => document.location.reload(true);
+                document.body.onload = () => {
+                    hide(reset);
+                    createMessage("Greetings! I'm your friendly guide, Tonio!");
+                    createMessage("Here you can play the old but gold Higher or Lower game!");
+                    createMessage("I've picked a number between 0 and 100 inclusive for you. Try to guess it in 10 attempts. <b>Or else.</b>");
+                    createMessage("Or else you just suck, I guess.");
+                    createMessage("Anyways good luck.");
+                    createMessage(`Attempt #${attempts}.`);
+                };
+
+                input.onkeyup = function(e) {
+                    if (e.keyCode === 13) {
+                        const value = +input.value.trim();
+                        if (!isNaN(value)) {
+                            if (value === 69) {
+                                createMessage(Math.random() < 0.5 ? "Noice. Très noice." : "Nłas. Bardzo nłas.");
+                            }
+                            if (value === random) {
+                                win();
+                            } else {
+                                if (value > random) {
+                                    createMessage("Nope, aim lower.");
+                                } else {
+                                    createMessage("Nope, aim higher.");
+                                }
+                                input.value = "";
+                                attempts++;
+                                if (attempts === 9) createMessage("Last attempt.");
+                                if (attempts !== 10) createMessage(`Attempt #${attempts}.`);
+                                else lose();
+                            }
+                        } else {
+                            switch (inputMismatchCount) {
+                                case 0: createMessage("Bruh.");
+                                break;
+                                case 1: createMessage("B r u h.");
+                                break;
+                                case 2: createMessage("Stop.");
+                                break;
+                                case 3:
+                                createMessage("That's not funny.");
+                                lose();
+                                break;
+                            }
+                            inputMismatchCount++;
+                        }
+                    }
+                };
+
+                function lose() {
+                    hide(input);
+                    show(reset);
+                    createMessage(`You lose. The number to guess was ${random}. g i t   g u d.`);
+                };
+
+                function hide(el) {
+                    el.style.display = "none";
+                };
+
+                function show(el) {
+                    el.style.display = "unset";
+                };
+
+                function win() {
+                    createMessage(`You win! It took you ${attempts} attempt(s) to secure the win. Now go conquer za warudo.`);
+                    hide(input);
+                    show(reset);
+                };
+            })();
+        </script>
+    </body>
+</html>
